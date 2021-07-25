@@ -1,0 +1,33 @@
+---
+- name: Check service on EC Instance
+  hosts: ECTEST
+  become: true
+  gather_facts: false
+
+  tasks:
+#  - debug:
+#     var: ansible_facts["system"]
+  - name: check if CommanderServer
+    stat:
+      path: /etc/init.d/commanderServer
+    register: commanderServer
+  - name: Check Commander Server
+    shell: /etc/init.d/commanderServer status
+    when: commanderServer.stat.exists == true
+    ignore_errors: yes
+    register: pscmdr
+  - debug: var=pscmdr.stdout_lines
+
+
+################################################
+  - name: check if CommanderApache
+    stat:
+      path: /etc/init.d/commanderApache
+    register: commanderApache
+  - name: Check Commander Apache
+    shell: /etc/init.d/commanderApache status
+    when: commanderApache.stat.exists == true
+    ignore_errors: yes
+    register: psapache
+  - debug: var=psapache.stdout_lines
+###############################################

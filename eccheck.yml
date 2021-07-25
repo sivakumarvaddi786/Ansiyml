@@ -1,0 +1,45 @@
+---
+- name: Check service on EC Instance
+  hosts: ECTEST
+  become: true
+  gather_facts: false
+
+  tasks:
+  - name: check for CommanderServer
+    stat:
+      path: /etc/init.d/commanderServer
+    register: commanderServer
+
+  - name: check for CommanderApache
+    stat:
+      path: /etc/init.d/commanderApache
+    register: commanderApache
+
+  - name: check for haproxy
+    stat:
+      path: /etc/init.d/haproxy
+    register: hproxy
+  - name: check for keepalived
+    stat:
+      path: /etc/init.d/keepalived
+    register: keep
+
+  - name: check for Zookeeper
+    stat:
+      path: /etc/zookeeper/conf/zoo.cfg
+    register: zoocfg
+
+  - name: Check Commander Server
+    shell: if [[ "$(/etc/init.d/commanderServer status)" =~ "CloudBees Software Delivery Automation Server is running" ]];then echo "Service UP"; else /etc/init.d/commanderServer start;fi
+    when: commanderServer.stat.exists == true
+    ignore_errors: yes
+    register: pscmdr
+  - debug: var=pscmdr.stdout_lines
+
+  - name: Check Commander Apache
+    shell: /etc/init.d/commanderApache status
+    when: commanderApache.stat.exists == true
+    ignore_errors: yes
+    register: psapache
+  - debug: var=psapache.stdout_lines
+###############################################

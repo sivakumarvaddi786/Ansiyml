@@ -1,0 +1,14 @@
+---
+ - name: "First Ansi"
+   hosts: localhost
+   become: true
+   tasks: 
+   - name: Installing Git
+     apt:
+       name: "{{ item }}"
+       update_cache: yes
+     with_items:
+         - "git"
+         - "nginx"
+   - name: Install python Modules
+     command: pip install suds
